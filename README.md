@@ -161,8 +161,33 @@ include(hello.urls) will include all urls from the hello app if someone goes to 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+# Check if today is New Year
+Simple newyear app which checks if today is new year.
 
+Follow above steps which we used to create hello app and create new app, register in settings, create urls.py and update views.py
 
+Code which checks if today's day is new year or not.views.py
+
+```Python
+def newyear(request, name):
+    now = datetime.datetime.now()
+    return render(request, "newyear/index.html", {
+        "name" : name,
+        "datetime" : now.month == 1 and now.day == 1,
+        "year" : now.year,
+        "month" : now.month,
+        "day" : now.day
+        
+    })
+```
+Code in index.html. Folder location newyear/templates/newyear/index.html
+```Python
+{%if datetime%}
+    <p>Today is New Year!</p>
+{% else %}
+    <p>Today is not New Year!</p>
+{% endif %}
+```
 
 
 
