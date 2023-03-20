@@ -189,6 +189,9 @@ Code in index.html. Folder location newyear/templates/newyear/index.html
 {% endif %}
 ```
 
+Output
+
+![Alt text](images/check_newyear.png)
 
 
 
