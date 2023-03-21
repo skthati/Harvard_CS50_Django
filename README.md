@@ -191,7 +191,193 @@ Code in index.html. Folder location newyear/templates/newyear/index.html
 
 Output
 
-![Alt text](images/check_newyear.png)
+![check new year output image](images/check_newyear.png)
 
 
 
+# layouts
+
+Layouts is html template used to eliminated repeated code and very useful altering html content.
+
+Create a file named `layout.html` in templates folder and copy below code.
+
+`layout.html`
+```Python
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Tasks</title>
+    </head>
+
+    <body>
+        {% block body %}
+        {% endblock body %}
+    </body>
+</html>
+```
+
+`index.html`
+```Python
+{% extends 'layout.html' %}
+
+{% block body %}
+    <p> Page specific content here. </p>
+{% endblock body %}
+```
+
+`{% block any_name %} and {% endblock any_name %}` are used to eliminate repeated content.
+
+
+# Tasks App
+By following hello app and newyear app, create all routine steps
+
+1. Create new app Tasks using `python3 manage.py startapp tasks`
+2. Register app in settings.py
+3. Create function in views.py
+4. Add reference in main urls.py
+5. Add url path in local urls.py for the newly created function.
+6. Create html in templates folder
+
+## Create a list
+
+`views.py`
+
+```Python
+def tasks(request):
+    tasks = ["alpha", "bravo", "charlie"]
+    return render(request, "tasks/index.html", {
+        "tasks" : tasks,
+        "hello" : "Hello ",
+        "employee" : employee,
+    })
+```
+
+## index html page
+Iterate through tasks list to show list or dictionary.
+
+`index.html`
+```Python
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1> Tasks </h1>
+        <ul>
+            
+            {% for i in tasks %}
+                <li>{{ i }}</li>
+            {% endfor %}
+        </ul>
+    
+    {% for i, j in employee.items %}
+        {{ i }} : {{ j }}
+    {% endfor %}
+
+    <a href="{% url 'tasks:add' %}"> Add a new task </a>
+{% endblock body %}
+```
+
+## add html page
+
+`add.html`
+```Python
+{% extends 'layout.html' %}
+
+{% block body %}
+<h1>Add Task </h1>
+
+<form action="">
+    <input type="text" name="task">
+    <input type="submit"> 
+</form>
+
+<a href="{% url 'index' %}"> Back to Tasks </a>
+{% endblock body %}
+```
+
+## To post a form
+
+`add.html`
+```Python
+<form action="{% url 'tasks:add' %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="task">
+    <input type="submit"> 
+</form>
+```
+csrf token is to prevent CSRF attacks.
+
+# Final code and Output
+
+
+[index.html](tasks/templates/tasks/index.html)
+
+![Alt text](images/list.png)
+
+
+Below is the html page and output picture.
+
+[add.html](tasks/templates/tasks/add.html)
+
+![Alt text](images/add_task.png)
+
+
+# views.py
+
+```Python
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+from django import forms
+
+# Create your views here.
+
+tasks = ["alpha", "bravo", "charlie"]
+
+class NewTaskForm(forms.Form):
+    task = forms.CharField(label="New Task")
+
+employee = {
+    "name" : ["alpha", "bravo"],
+    "age" : 39
+}
+
+# def tasks(request):
+#     global tasks
+#     return render(request, "tasks/index.html", {
+#         "tasks" : tasks,
+#         "hello" : "Hello ",
+#         "employee" : employee,
+#     })
+
+def tasks(request):
+    if "tasks" not in request.session:
+        request.session["tasks"] = []
+    return render(request, "tasks/index.html", {
+        "tasks" : request.session["tasks"]
+    })
+
+def add(request):
+    # global tasks
+    # if request.method == "post":
+    #     name = request.form['task']
+    #     tasks.tasks.append(name)
+    #     employee["name"].append(name)
+    #     return HttpResponseRedirect(reverse("tasks:index"))
+    
+    if request.method == "POST":
+        form = NewTaskForm(request.POST)
+        
+        if form.is_valid():
+            task = form.cleaned_data["task"]
+            # tasks.append(task)
+            request.session["tasks"]+=[task]
+            return HttpResponseRedirect(reverse("tasks:index"))
+        else:
+            return render(request, "tasks/add.html", {
+                "form" : form
+            })
+        
+    return render(request, "tasks/add.html", {
+        "form" : NewTaskForm()
+    })
+```

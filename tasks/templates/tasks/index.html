@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1> Tasks </h1>
+        <ul>
+            
+            {% for i in tasks %}
+                <li>{{ i }}</li>
+            {% endfor %}
+        </ul>
+    
+    {% comment %} <h1> Employee details using dictionary </h1>
+
+    {% for i, j in employee.items %}
+        {{ i }} : {{ j }}
+    {% endfor %} {% endcomment %}
+
+    <br>
+    <br>
+
+    <a href="{% url 'tasks:add' %}"> Add a new task </a>
+{% endblock body %}
